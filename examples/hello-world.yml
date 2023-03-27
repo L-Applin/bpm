@@ -1,0 +1,10 @@
+pipeline:
+  file: "examples/hello-world.go"
+  func: "HelloWorld"
+  description: |
+    hello world example for bpm
+  project: "Hello World Project"
+  environments: [ "demo" ]
+  configurations:
+    to-say: |
+      Text from the config file

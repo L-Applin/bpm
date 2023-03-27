@@ -1,0 +1,34 @@
+pipeline:
+  file: "pipeline-example.go"
+  func: "ReleasePipeline"
+  description: |
+    This is a demo pipeline containing configuration for multiple environments
+  project: Examples
+  environments :
+  - staging
+  - prod
+  configurations:
+    work-dir: "/tmp"
+    demo: "this is a test"
+    cron-pattern: "0 15 10 ? * *"
+    maven-arg: "-T1C -P build"
+    git:
+      dir: GitHub
+      repo: my-git-repo.code.com
+      credentials:
+        user: "user-default"
+        pwd: "pwd-default"
+    $staging:
+      work-dir: "/tmp-staging"
+      git:
+        credentials:
+          user: "user-staging"
+          pwd: "pwd-staging"
+    $prod:
+      work-dir: "/tmp-prod"
+      git:
+        repo: "{{GIT_REPO_FROM_ENV}}"
+        new: "this is new"
+        credentials:
+          user: "user-prod"
+          pwd: "pwd-prod"

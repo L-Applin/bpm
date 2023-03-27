@@ -1,0 +1,5 @@
+script:
+  file: "examples/dummy.sh"
+  env:
+    BPM_MSG: "[{{env}}] This will be passed to the script as env var."
+    WORK_DIR: "{{work-dir}}"
