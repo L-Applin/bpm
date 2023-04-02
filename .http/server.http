@@ -1,0 +1,9 @@
+GET localhost:3333/api/projects
+Accept: application/json
+
+###
+POST localhost:3333/api/my-project/create-pipeline
+Content-Type: application/octet-stream
+
+SGVsbG8sIFNhaWxvciE=
+

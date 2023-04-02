@@ -1,3 +1,5 @@
+// Copyright (c) 2023 Olivier Lepage-Applin. All rights reserved.
+
 package log
 
 import (
@@ -77,6 +79,10 @@ func Infof(log string, a ...any) {
 	Logf(Levels.Info, log, a...)
 }
 
+func Debug(log string) {
+	Log(Levels.Debug, log)
+}
+
 func Debugf(log string, a ...any) {
 	Logf(Levels.Debug, log, a...)
 }
@@ -110,7 +116,7 @@ func SetGlobalLogLevel(level Level) {
 }
 
 func SetGlobalLogLevelFromString(level string) {
-	if l, err := LevelFromString(level); err != nil {
+	if l, err := LevelFromString(level); err == nil {
 		SetGlobalLogLevel(l)
 	}
 }
