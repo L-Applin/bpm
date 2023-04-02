@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bpm/log"
 	"bpm/server/handlers"
-	"fmt"
 	"net/http"
 )
 
@@ -12,6 +12,6 @@ func main() {
 	err := http.ListenAndServe(":3333", nil)
 
 	if err != nil {
-		fmt.Errorf("error: %v", err.Error())
+		log.ErrorE(err)
 	}
 }

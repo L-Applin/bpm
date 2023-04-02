@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	log.GlobalLevel = log.Levels.Info
 	args := bpm.Args{}
 	CliArgs(&args)
 	conf, err := config.ParseConfigFile(args.ConfigFile, args.Env)
@@ -76,6 +75,6 @@ func CliArgs(args *bpm.Args) {
 		"If missing preprocessed variable should fail pre-processing")
 	flag.StringVar(&args.LogLevel, "log", "Info", "Log level")
 	flag.Parse()
-	log.GlobalLevel = log.LevelFromString(args.LogLevel)
+	log.SetGlobalLogLevelFromString(args.LogLevel)
 	log.Debugf("%#v\n", *args)
 }
