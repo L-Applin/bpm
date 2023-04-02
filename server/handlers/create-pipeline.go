@@ -13,5 +13,8 @@ type CreatePipelineHandler struct {
 }
 
 func (CreatePipelineHandler) ServeHTTP(w http.ResponseWriter, request *http.Request) {
-	io.WriteString(w, request.Host)
+	b, err := io.ReadAll(request.Body)
+	if b != nil {
+		w.WriteHeader()
+	}
 }

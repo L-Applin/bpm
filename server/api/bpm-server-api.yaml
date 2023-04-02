@@ -1,0 +1,17 @@
+openapi: "3.1.0"
+info:
+  title: BPM Api
+  summary: Pipeline manager for BPM
+  description: |
+    Description for the **BPM Api**
+  termsOfService: https://github.com/L-Applin/bpm
+  contact:
+    name: L-Applion
+    url: https://github.com/L-Applin/bpm
+    email: support@applin.com
+  license:
+    name: Apache 2.0
+    url: https://github.com/L-Applin/bpm
+  version: 1.0.1
+
+components:

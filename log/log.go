@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -92,7 +93,7 @@ func (l Level) Compare(other Level) int {
 }
 
 func LevelFromString(level string) (Level, error) {
-	switch level {
+	switch strings.ToLower(level) {
 	case "info":
 		return Levels.Info, nil
 	case "debug":
