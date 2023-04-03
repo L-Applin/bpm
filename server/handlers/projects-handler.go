@@ -21,33 +21,46 @@ type ProjectListElem struct {
 }
 
 func NewProjectsHandler() http.Handler {
-	return New(ProjectsHandler{})
+	dbbpm, err := db.MockDefault()
+	if err != nil {
+		panic("cannot init mock db")
+	}
+	return New(ProjectsHandler{
+		db: dbbpm,
+	})
 }
 
 type ProjectsHandler struct {
+	db db.BpmDb
 }
 
 func (h ProjectsHandler) ServeHTTP(w http.ResponseWriter, request *http.Request) {
-	url := request.URL
-	if strings.HasSuffix(url.String(), "/api/projects/") {
-		listProjects(w, request)
+	path := request.URL.Path
+	if strings.HasSuffix(path, "/api/projects/") {
+		listProjects(w, h.db)
 	} else {
-		singleProject(w, request)
+		splits := strings.Split(path, "/")
+		prjName := splits[len(splits)-1]
+		singleProject(w, prjName, h.db)
 	}
 }
 
-func singleProject(w http.ResponseWriter, request *http.Request) {
-	splits := strings.Split(request.URL.String(), "/")
-	projectName := splits[len(splits)-1]
-	log.Debugf("command: Single project '%s'", projectName)
-
-	infoJson := ProjectListElem{
-		Name:      projectName,
-		Pipelines: []string{"pipeline-1", "pipeline-2", "pipeline-3"},
-	}
-	b, err := json.Marshal(infoJson)
+func listProjects(w http.ResponseWriter, dbBpm db.BpmDb) {
+	log.Debug("command: list projects")
+	infos, err := dbBpm.ProjectsInfo()
 	if err != nil {
-		log.Errorf("error while marshalling json: %$v", infoJson)
+		log.ErrorE(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	infoJson := utils.MapList[db.ProjectInfo, ProjectListElem](infos, func(info db.ProjectInfo) ProjectListElem {
+		return ProjectListElem{
+			Name:      info.Name,
+			Pipelines: info.Pipelines,
+		}
+	})
+	b, err := json.Marshal(ProjectListResponse{Project: infoJson})
+	if err != nil {
+		log.Errorf("error while marshaling to json: %#v", infoJson)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,20 +71,22 @@ func singleProject(w http.ResponseWriter, request *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	log.Debug("single projects done")
-
+	log.Debug("list projects done")
 }
 
-func listProjects(w http.ResponseWriter, request *http.Request) {
-	log.Debug("command: list projects")
-	infos := db.GetProjectInfo()
-	infoJson := utils.MapList[db.ProjectInfo, ProjectListElem](infos, func(info db.ProjectInfo) ProjectListElem {
-		return ProjectListElem{
-			Name:      info.Name,
-			Pipelines: info.Pipelines,
-		}
-	})
-	b, err := json.Marshal(ProjectListResponse{Project: infoJson})
+func singleProject(w http.ResponseWriter, projectName string, dbBpm db.BpmDb) {
+	log.Debugf("command: project info '%s'", projectName)
+	info, err := dbBpm.ProjectInfo(projectName)
+	if err != nil {
+		log.ErrorE(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	infoJson := ProjectListElem{
+		Name:      info.Name,
+		Pipelines: info.Pipelines,
+	}
+	b, err := json.Marshal(infoJson)
 	if err != nil {
 		log.Errorf("error while marshaling to json: %#v", infoJson)
 		w.WriteHeader(http.StatusInternalServerError)

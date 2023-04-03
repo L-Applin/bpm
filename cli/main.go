@@ -5,6 +5,8 @@ package main
 import (
 	"bpm/log"
 	"bpm/utils"
+	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -86,7 +88,15 @@ func projects(args []string) {
 		ReportError(err)
 		return
 	}
-	log.Debugf("body: %s", string(body))
+	var empty []byte
+	buf := bytes.NewBuffer(empty)
+	json.Indent(buf, body, "", "   ")
+	pretty, err := io.ReadAll(buf)
+	if err != nil {
+		ReportError(err)
+		return
+	}
+	fmt.Println(string(pretty))
 }
 
 type CreatePipelineArgs struct {
